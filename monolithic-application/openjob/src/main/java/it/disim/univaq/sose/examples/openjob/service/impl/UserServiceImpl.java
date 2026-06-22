@@ -16,4 +16,8 @@ public class UserServiceImpl extends CrudServiceImpl<User, Long> implements User
 		return ((UserRepository) repository).findByUsername(username);
 	}
 
+	public UserServiceImpl(UserRepository repository) {
+		super(repository);
+	}
+
 }

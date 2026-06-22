@@ -23,38 +23,40 @@ import it.disim.univaq.sose.examples.openjob.service.UserService;
 @RequestMapping("/job")
 public class JobController {
 
-	@Autowired
-	private JobService jobService;
+	private final JobService jobService;
+	private final UserService userService;
 
-	@Autowired
-	private UserService userService;
+	public JobController(JobService jobService, UserService userService) {
+		this.jobService = jobService;
+		this.userService = userService;
+	}
 
 	@GetMapping
 	public ResponseEntity<List<Job>> getAllJobs() {
-		return new ResponseEntity<List<Job>>(jobService.findAll(), HttpStatus.OK);
+		return ResponseEntity.ok(jobService.findAll());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Job> getJobById(@PathVariable("id") Long id) {
-		return new ResponseEntity<Job>(jobService.findById(id), HttpStatus.OK);
+		return ResponseEntity.ok(jobService.findById(id));
 	}
 
 	@PostMapping
 	public ResponseEntity<Void> createJob(@RequestBody Job job) {
 		jobService.create(job);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping
 	public ResponseEntity<Void> updateJob(@RequestBody Job job) {
 		jobService.update(job);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteJob(@PathVariable("id") Long id) {
 		jobService.delete(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/apply/{username}/{id}")
@@ -63,7 +65,7 @@ public class JobController {
 		User user = userService.findByUsername(username).orElseThrow();
 		job.getApplicants().add(user);
 		jobService.update(job);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 }

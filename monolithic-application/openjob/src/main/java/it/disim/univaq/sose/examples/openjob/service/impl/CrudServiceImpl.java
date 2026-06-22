@@ -9,8 +9,11 @@ import it.disim.univaq.sose.examples.openjob.service.CrudService;
 
 public class CrudServiceImpl<Entity, Key> implements CrudService<Entity, Key>{
 
-	@Autowired
-	protected CrudRepository<Entity, Key> repository;
+	protected final CrudRepository<Entity, Key> repository;
+
+	public CrudServiceImpl(CrudRepository<Entity, Key> repository) {
+		this.repository = repository;
+	}
 	
 	@Override
 	public List<Entity> findAll() {
