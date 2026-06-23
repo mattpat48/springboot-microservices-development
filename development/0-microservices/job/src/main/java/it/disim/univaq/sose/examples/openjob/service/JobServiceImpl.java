@@ -12,8 +12,11 @@ import it.disim.univaq.sose.examples.openjob.repository.JobRepository;
 @Service
 public class JobServiceImpl implements JobService {
 
-	@Autowired
-	protected JobRepository repository;
+	protected final JobRepository repository;
+
+	public JobServiceImpl(JobRepository repository) {
+		this.repository = repository;
+	}
 	
 	@Override
 	@Transactional(readOnly=true)

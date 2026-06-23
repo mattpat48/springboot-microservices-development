@@ -19,3 +19,13 @@ The legacy Spring code in `monolithic-application/openjob` has been thoroughly r
   - `UserServiceImpl`
 - **ResponseEntity Builders**: Modernized the REST controller endpoints. Replaced legacy and verbose response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
 - **Compilation Check**: Verified that the monolithic application compiles successfully with zero errors under Java 25 and Spring Boot 4.1.0.
+
+## Development Step: 0-microservices Code Modernization
+The legacy Spring code in `development/0-microservices/job` and `development/0-microservices/user` has been thoroughly reviewed and modernized:
+- **Constructor Injection**: Replaced outdated `@Autowired` field injections with Constructor Injection to improve testability and ensure immutability across the following files:
+  - `JobController`
+  - `UserController`
+  - `JobServiceImpl`
+  - `UserServiceImpl`
+- **ResponseEntity Builders**: Modernized the REST controller endpoints. Replaced legacy response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
+
