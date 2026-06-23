@@ -176,13 +176,25 @@ spring:
           predicates:
           - Path=/api/usr/**
           filters:
-          - RewritePath=/api/usr(?<segment>), /user$\{segment}
+          - RewritePath=/api/usr(?<segment>/?.*), /user\${segment}
+        - id: user_route_exact
+          uri: http://localhost:9044
+          predicates:
+          - Path=/api/usr
+          filters:
+          - RewritePath=/api/usr, /user
         - id: job_route
           uri: http://localhost:9055
           predicates:
           - Path=/api/job/**
           filters:
-          - RewritePath=/api(?<segment>/?), $\{segment}
+          - RewritePath=/api(?<segment>/?.*), \${segment}
+        - id: job_route_exact
+          uri: http://localhost:9055
+          predicates:
+          - Path=/api/job
+          filters:
+          - RewritePath=/api/job, /job
 
 # Spring Boot Actuator configuration
 management:
@@ -726,13 +738,25 @@ spring:
           predicates:
           - Path=/api/usr/**
           filters:
-          - RewritePath=/api/usr(?<segment>), /user$\{segment}
+          - RewritePath=/api/usr(?<segment>/?.*), /user\${segment}
+        - id: user_route_exact
+          uri: http://localhost:9044
+          predicates:
+          - Path=/api/usr
+          filters:
+          - RewritePath=/api/usr, /user
         - id: job_route
           uri: lb://job-microservice
           predicates:
           - Path=/api/job/**
           filters:
-          - RewritePath=/api(?<segment>/?), $\{segment}
+          - RewritePath=/api(?<segment>/?.*), \${segment}
+        - id: job_route_exact
+          uri: lb://job-microservice
+          predicates:
+          - Path=/api/job
+          filters:
+          - RewritePath=/api/job, /job
 ```
 
 ### Run and test
@@ -835,13 +859,25 @@ spring:
           predicates:
           - Path=/api/usr/**
           filters:
-          - RewritePath=/api/usr(?<segment>), /user$\{segment}
+          - RewritePath=/api/usr(?<segment>/?.*), /user\${segment}
+        - id: user_route_exact
+          uri: lb://user-microservice
+          predicates:
+          - Path=/api/usr
+          filters:
+          - RewritePath=/api/usr, /user
         - id: job_route
           uri: lb://job-microservice
           predicates:
           - Path=/api/job/**
           filters:
-          - RewritePath=/api(?<segment>/?), $\{segment}
+          - RewritePath=/api(?<segment>/?.*), \${segment}
+        - id: job_route_exact
+          uri: lb://job-microservice
+          predicates:
+          - Path=/api/job
+          filters:
+          - RewritePath=/api/job, /job
 ```
 
 > [!NOTE]
