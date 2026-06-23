@@ -33,3 +33,17 @@ The legacy Spring code in `development/0-microservices/job` and `development/0-m
 The API Gateway application under `development/1-gateway+maven` has been reviewed and modernized:
 - **Dependency Upgrades**: Upgraded the `pom.xml` to Java 25, Spring Boot 4.1.0, and Spring Cloud 2025.1.2. Replaced the obsolete `spring-cloud-starter-gateway` dependency with `spring-cloud-starter-gateway-server-webflux`.
 - **Compilation Check**: Verified that the gateway application compiles successfully with zero errors. The `job` and `user` microservices in this step were also confirmed to carry over the previously applied modernizations correctly.
+
+## Development Step: 2-decentralized_configuration Code Modernization
+Because we intentionally avoided carrying over the previous microservices to prevent losing step-specific changes, I applied the modernization routines directly to all components within `development/2-decentralized_configuration`:
+- **Constructor Injection & ResponseEntity**: The `job` and `user` microservices have been manually updated to use constructor injection and modern `ResponseEntity` builders.
+- **Dependency Fix**: Re-applied the `jackson-databind` fix to the `job` microservice's `pom.xml`.
+- **Gateway & Config Server**: Confirmed that the `gateway` dependency update (to `spring-cloud-starter-gateway-server-webflux`) was correctly applied. The `config-server` component was also reviewed and uses standard `@EnableConfigServer` annotations with no legacy code.
+- **Compilation Check**: Verified that `job`, `user`, `gateway`, and `config-server` compile successfully with zero errors.
+
+## Development Step: 3-service_discovery+load_balancing Code Modernization
+I modernized the entire `3-service_discovery+load_balancing` step while ensuring zero obsolete imports were left behind:
+- **Clean Constructor Injection & ResponseEntity**: The `job` and `user` microservices have been updated to use constructor injection and `ResponseEntity` builders. Furthermore, I proactively removed the now-obsolete `org.springframework.beans.factory.annotation.Autowired` and `org.springframework.http.HttpStatus` imports.
+- **Dependency Fix**: Applied the `jackson-databind` fix to the `job` microservice's `pom.xml`.
+- **Netflix Eureka Server & Gateway**: Validated the newly introduced `discovery-server`. It correctly uses `@EnableEurekaServer` with no legacy code to remove. The `config-server` and `gateway` remain clean as well.
+- **Compilation Check**: Verified that all 5 components (`job`, `user`, `gateway`, `config-server`, `discovery-server`) compile successfully under Java 25.

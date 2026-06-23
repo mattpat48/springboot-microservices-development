@@ -2,7 +2,7 @@ package it.disim.univaq.sose.examples.openjob.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 
 import it.disim.univaq.sose.examples.openjob.repository.CrudRepository;
 import it.disim.univaq.sose.examples.openjob.service.CrudService;

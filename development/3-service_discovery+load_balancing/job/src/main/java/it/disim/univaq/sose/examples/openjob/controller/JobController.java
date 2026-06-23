@@ -3,9 +3,9 @@ package it.disim.univaq.sose.examples.openjob.controller;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,11 +28,13 @@ import it.disim.univaq.sose.examples.openjob.service.JobService;
 @RequestMapping("/job")
 public class JobController {
 
-	@Autowired
-	private JobService jobService;
+	private final JobService jobService;
+	private final UserMicroserviceInvoker userMicroserviceInvoker;
 
-	@Autowired
-	private UserMicroserviceInvoker userMicroserviceInvoker;
+	public JobController(JobService jobService, UserMicroserviceInvoker userMicroserviceInvoker) {
+		this.jobService = jobService;
+		this.userMicroserviceInvoker = userMicroserviceInvoker;
+	}
 
 
 	@Value("${server.port}")
@@ -41,34 +43,34 @@ public class JobController {
 	@GetMapping
 	public ResponseEntity<List<Job>> getAllJobs() {
 		System.out.println(portNumber);
-		return new ResponseEntity<List<Job>>(jobService.findAll(), HttpStatus.OK);
+		return ResponseEntity.ok(jobService.findAll());
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<Job> getJobById(@PathVariable("id") Long id) {
 		System.out.println(portNumber);
-		return new ResponseEntity<Job>(jobService.findById(id), HttpStatus.OK);
+		return ResponseEntity.ok(jobService.findById(id));
 	}
 
 	@PostMapping
 	public ResponseEntity<Void> createJob(@RequestBody Job job) {
 		System.out.println(portNumber);
 		jobService.create(job);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@PutMapping
 	public ResponseEntity<Void> updateJob(@RequestBody Job job) {
 		System.out.println(portNumber);
 		jobService.update(job);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteJob(@PathVariable("id") Long id) {
 		System.out.println(portNumber);
 		jobService.delete(id);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping("/apply/{username}/{id}")
@@ -90,7 +92,7 @@ public class JobController {
 
 		jobService.update(job);
 
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		return ResponseEntity.noContent().build();
 	}
 
 }
