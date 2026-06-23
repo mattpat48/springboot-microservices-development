@@ -29,3 +29,7 @@ The legacy Spring code in `development/0-microservices/job` and `development/0-m
   - `UserServiceImpl`
 - **ResponseEntity Builders**: Modernized the REST controller endpoints. Replaced legacy response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
 
+## Development Step: 1-gateway+maven Code Modernization
+The API Gateway application under `development/1-gateway+maven` has been reviewed and modernized:
+- **Dependency Upgrades**: Upgraded the `pom.xml` to Java 25, Spring Boot 4.1.0, and Spring Cloud 2025.1.2. Replaced the obsolete `spring-cloud-starter-gateway` dependency with `spring-cloud-starter-gateway-server-webflux`.
+- **Compilation Check**: Verified that the gateway application compiles successfully with zero errors. The `job` and `user` microservices in this step were also confirmed to carry over the previously applied modernizations correctly.

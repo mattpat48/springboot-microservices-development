@@ -13,8 +13,11 @@ import it.disim.univaq.sose.examples.openjob.repository.UserRepository;
 @Service
 public class UserServiceImpl implements UserService {
 
-	@Autowired
-	protected UserRepository repository;
+	protected final UserRepository repository;
+
+	public UserServiceImpl(UserRepository repository) {
+		this.repository = repository;
+	}
 
 	@Override
 	@Transactional(readOnly=true)
