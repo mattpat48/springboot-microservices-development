@@ -1,49 +1,44 @@
 # Project Updates
 
-## Version Migrations (pom.xml)
-The legacy configurations in all `pom.xml` files across the project (including monolithic, microservices, and development directories) have been migrated to the latest standards:
+## Version Migrations (Global)
+The legacy configurations in all `pom.xml` files across the project (including the monolithic application, microservices, and all development steps) have been migrated to the latest standards:
 - **Spring Boot**: Upgraded from `3.x` to `4.1.0`.
 - **Java**: Upgraded from `17` to `25`.
 - **Spring Cloud**: Upgraded from `2022.0.2` to `2025.1.2`.
 - **Dependencies**: Added `micrometer-registry-prometheus` to the `job`, `user`, and `gateway` microservices to support Grafana/Prometheus monitoring.
-- **Spring Cloud Gateway Modernization**: Replaced `spring-cloud-starter-gateway` with `spring-cloud-starter-gateway-server-webflux` across all gateway `pom.xml` files. 
-  - **Motive**: In the latest Spring Cloud versions (like `2025.x`), the Gateway was split into WebFlux and MVC implementations, and the old `spring-cloud-starter-gateway` artifact was removed from the BOM. This rename resolves the "dependencies.dependency.version is missing" build error and ensures the application correctly pulls in the modern reactive gateway stack.
+- **Spring Cloud Gateway Modernization**: Replaced `spring-cloud-starter-gateway` with `spring-cloud-starter-gateway-server-webflux` across all gateway `pom.xml` files. In the latest Spring Cloud versions (`2025.x`), the Gateway was split into WebFlux and MVC implementations, and the old `spring-cloud-starter-gateway` artifact was removed from the BOM. This rename resolves the "dependencies.dependency.version is missing" build error and ensures the application correctly pulls in the modern reactive gateway stack.
 
 ## Monolithic Application Code Modernization
-The legacy Spring code in `monolithic-application/openjob` has been thoroughly reviewed and updated to align with modern best practices:
-- **Constructor Injection**: Replaced all outdated `@Autowired` field injections with Constructor Injection to improve testability and ensure immutability. This was applied to:
-  - `JobController`
-  - `UserController`
-  - `CrudServiceImpl`
-  - `JobServiceImpl`
-  - `UserServiceImpl`
-- **ResponseEntity Builders**: Modernized the REST controller endpoints. Replaced legacy and verbose response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
-- **Compilation Check**: Verified that the monolithic application compiles successfully with zero errors under Java 25 and Spring Boot 4.1.0.
+The legacy Spring code in `monolithic-application/openjob` has been updated to align with modern best practices:
+- **Constructor Injection**: Replaced outdated `@Autowired` field injections with constructor injection to improve testability and ensure immutability across controllers and services.
+- **ResponseEntity Builders**: Modernized the REST controller endpoints by replacing legacy response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
 
 ## Development Step: 0-microservices Code Modernization
-The legacy Spring code in `development/0-microservices/job` and `development/0-microservices/user` has been thoroughly reviewed and modernized:
-- **Constructor Injection**: Replaced outdated `@Autowired` field injections with Constructor Injection to improve testability and ensure immutability across the following files:
-  - `JobController`
-  - `UserController`
-  - `JobServiceImpl`
-  - `UserServiceImpl`
-- **ResponseEntity Builders**: Modernized the REST controller endpoints. Replaced legacy response instantiations (e.g., `new ResponseEntity<>(body, HttpStatus.OK)`) with modern Spring builder patterns such as `ResponseEntity.ok()` and `ResponseEntity.noContent().build()`.
+- **Constructor Injection & ResponseEntity Builders**: Applied the same modernizations used in the monolithic application to the `job` and `user` microservices.
+- **Jackson Dependency Fix**: Added the missing `jackson-databind` dependency to the `job` microservice's `pom.xml` to resolve `JsonNode` processing errors.
 
 ## Development Step: 1-gateway+maven Code Modernization
-The API Gateway application under `development/1-gateway+maven` has been reviewed and modernized:
-- **Dependency Upgrades**: Upgraded the `pom.xml` to Java 25, Spring Boot 4.1.0, and Spring Cloud 2025.1.2. Replaced the obsolete `spring-cloud-starter-gateway` dependency with `spring-cloud-starter-gateway-server-webflux`.
-- **Compilation Check**: Verified that the gateway application compiles successfully with zero errors. The `job` and `user` microservices in this step were also confirmed to carry over the previously applied modernizations correctly.
+- **Gateway Server Update**: Replaced the obsolete `spring-cloud-starter-gateway` dependency with `spring-cloud-starter-gateway-server-webflux`.
 
 ## Development Step: 2-decentralized_configuration Code Modernization
-Because we intentionally avoided carrying over the previous microservices to prevent losing step-specific changes, I applied the modernization routines directly to all components within `development/2-decentralized_configuration`:
-- **Constructor Injection & ResponseEntity**: The `job` and `user` microservices have been manually updated to use constructor injection and modern `ResponseEntity` builders.
-- **Dependency Fix**: Re-applied the `jackson-databind` fix to the `job` microservice's `pom.xml`.
-- **Gateway & Config Server**: Confirmed that the `gateway` dependency update (to `spring-cloud-starter-gateway-server-webflux`) was correctly applied. The `config-server` component was also reviewed and uses standard `@EnableConfigServer` annotations with no legacy code.
-- **Compilation Check**: Verified that `job`, `user`, `gateway`, and `config-server` compile successfully with zero errors.
+- **Constructor Injection & ResponseEntity Builders**: Updated the `job` and `user` microservices.
+- **Jackson Dependency Fix**: Added `jackson-databind` to the `job` microservice.
+- **Gateway Server Update**: Applied the `spring-cloud-starter-gateway-server-webflux` dependency update.
 
 ## Development Step: 3-service_discovery+load_balancing Code Modernization
-I modernized the entire `3-service_discovery+load_balancing` step while ensuring zero obsolete imports were left behind:
-- **Clean Constructor Injection & ResponseEntity**: The `job` and `user` microservices have been updated to use constructor injection and `ResponseEntity` builders. Furthermore, I proactively removed the now-obsolete `org.springframework.beans.factory.annotation.Autowired` and `org.springframework.http.HttpStatus` imports.
-- **Dependency Fix**: Applied the `jackson-databind` fix to the `job` microservice's `pom.xml`.
-- **Netflix Eureka Server & Gateway**: Validated the newly introduced `discovery-server`. It correctly uses `@EnableEurekaServer` with no legacy code to remove. The `config-server` and `gateway` remain clean as well.
-- **Compilation Check**: Verified that all 5 components (`job`, `user`, `gateway`, `config-server`, `discovery-server`) compile successfully under Java 25.
+- **Constructor Injection & ResponseEntity Builders**: Updated the `job` and `user` microservices, completely removing obsolete imports such as `org.springframework.beans.factory.annotation.Autowired` and `org.springframework.http.HttpStatus`.
+- **Jackson Dependency Fix**: Added `jackson-databind` to the `job` microservice.
+
+## Development Step: 4-openfeign_client-side_load_balancer Code Modernization & Migration
+- **RestTemplate to OpenFeign Migration**: The `UserMicroserviceInvoker` in the `job` microservice was entirely rewritten. It was previously a legacy `RestTemplate` implementation, but it has now been correctly refactored into a modern `@FeignClient` interface. 
+- **OpenFeign Configuration**: Introduced the `spring-cloud-starter-openfeign` dependency and activated `@EnableFeignClients` in the `JobApplication` main class.
+- **Constructor Injection & ResponseEntity Builders**: Updated the `job` and `user` microservices and removed obsolete imports.
+- **Jackson Dependency Fix**: Added `jackson-databind` to the `job` microservice.
+
+## Global Modernizations: RestTemplate Anti-Pattern Fixes
+During a final review of the modernization process from steps `0` through `3`, a major anti-pattern was identified and resolved:
+- **RestTemplate Bean Instantiation**: The `UserMicroserviceInvoker` originally instantiated `new RestTemplate()` on every single method call. This approach is highly inefficient and bypasses the Spring context. A standard `@Bean` of type `RestTemplate` was created in the `JobApplication` for steps 0, 1, and 2, and properly injected using constructor injection.
+- **Fixed Load Balancing in Step 3**: The biggest impact of the aforementioned anti-pattern was observed in step 3 (`3-service_discovery+load_balancing`). Because a raw `new RestTemplate()` was being used, client-side load balancing was completely broken and bypassed. To resolve this critical issue:
+  1. The `spring-cloud-starter-loadbalancer` dependency was added to the `job` microservice.
+  2. The `RestTemplate` bean was declared with the `@LoadBalanced` annotation inside `JobApplication`.
+  3. This load-balanced bean was injected into `UserMicroserviceInvoker`, ensuring step 3 accurately performs service discovery and load balancing as intended.

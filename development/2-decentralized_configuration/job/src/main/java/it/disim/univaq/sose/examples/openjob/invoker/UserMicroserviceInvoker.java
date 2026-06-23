@@ -25,6 +25,12 @@ public class UserMicroserviceInvoker {
 	@Value("${microservice.user.find.uri}")
 	private String baseUri;
 
+	private final RestTemplate restTemplate;
+
+	public UserMicroserviceInvoker(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
+	}
+
 	public JsonNode findUserByUsername(String username) {
 		URI uri = null;
 		try {
@@ -32,7 +38,6 @@ public class UserMicroserviceInvoker {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		RestTemplate restTemplate = new RestTemplate();
 		return restTemplate.getForObject(uri, JsonNode.class);
 	}
 

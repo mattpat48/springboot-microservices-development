@@ -1,18 +1,13 @@
 package it.disim.univaq.sose.examples.openjob.invoker;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-@Component
-@RefreshScope
-public class UserMicroserviceInvoker {
+@FeignClient(name = "user")
+public interface UserMicroserviceInvoker {
 
 	public static final String FIELD_ID = "id";
 	public static final String FIELD_USERNAME = "username";
@@ -22,18 +17,7 @@ public class UserMicroserviceInvoker {
 	public static final String FIELD_ROLES = "roles";
 	public static final String FIELD_ROLE_NAME = "name";
 
-	@Value("${microservice.user.find.uri}")
-	private String baseUri;
-
-	public JsonNode findUserByUsername(String username) {
-		URI uri = null;
-		try {
-			uri = new URI(baseUri + username);
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		RestTemplate restTemplate = new RestTemplate();
-		return restTemplate.getForObject(uri, JsonNode.class);
-	}
+	@GetMapping("/user/username/{username}")
+	JsonNode findUserByUsername(@PathVariable("username") String username);
 
 }
