@@ -33,4 +33,19 @@ public class ApplicantIdentity implements Serializable {
 		this.userId = userId;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ApplicantIdentity that = (ApplicantIdentity) o;
+		if (jobId != null ? !jobId.equals(that.jobId) : that.jobId != null) return false;
+		return userId != null ? userId.equals(that.userId) : that.userId == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = jobId != null ? jobId.hashCode() : 0;
+		result = 31 * result + (userId != null ? userId.hashCode() : 0);
+		return result;
+	}
 }
