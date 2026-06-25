@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 @RefreshScope
@@ -26,9 +27,11 @@ public class UserMicroserviceInvoker {
 	private String baseUri;
 
 	private final RestTemplate restTemplate;
+	private final ObjectMapper objectMapper;
 
 	public UserMicroserviceInvoker(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+		this.objectMapper = new ObjectMapper();
 	}
 
 	public JsonNode findUserByUsername(String username) {
@@ -38,7 +41,12 @@ public class UserMicroserviceInvoker {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return restTemplate.getForObject(uri, JsonNode.class);
+		String response = restTemplate.getForObject(uri, String.class);
+		try {
+			return response != null ? objectMapper.readTree(response) : null;
+		} catch (Exception e) {
+			throw new RuntimeException("Error parsing JSON response", e);
+		}
 	}
 
 }

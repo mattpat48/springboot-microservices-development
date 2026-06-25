@@ -42,3 +42,8 @@ During a final review of the modernization process from steps `0` through `3`, a
   1. The `spring-cloud-starter-loadbalancer` dependency was added to the `job` microservice.
   2. The `RestTemplate` bean was declared with the `@LoadBalanced` annotation inside `JobApplication`.
   3. This load-balanced bean was injected into `UserMicroserviceInvoker`, ensuring step 3 accurately performs service discovery and load balancing as intended.
+
+## Global Bug Fixes (Steps 0-3)
+During runtime testing of the Job microservice, two critical bugs were identified and fixed across all development steps:
+- **Jackson Bean Resolution Error**: Fixed a startup error where Spring's Dependency Injection failed to locate an `ObjectMapper` bean. This was resolved by manually instantiating `new ObjectMapper()` directly in `UserMicroserviceInvoker`, avoiding the `UnsatisfiedDependencyException`.
+- **Hibernate JPA Collection Bugs**: Resolved a `Multiple representations of the same entity` exception that occurred when testing the `applytoJob` endpoint. The bug was caused by missing identity comparisons. As per JPA specifications, `equals()` and `hashCode()` were implemented in both the `@Embeddable` composite key (`ApplicantIdentity.java`) and the `@Entity` class (`Applicant.java`) to ensure Hibernate correctly merges the `Set<Applicant>` collection without creating duplicate instances.
