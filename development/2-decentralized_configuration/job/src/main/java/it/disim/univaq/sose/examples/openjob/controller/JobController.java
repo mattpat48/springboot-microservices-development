@@ -3,9 +3,8 @@ package it.disim.univaq.sose.examples.openjob.controller;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.springframework.beans.factory.annotation.Value;
-
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +25,7 @@ import it.disim.univaq.sose.examples.openjob.service.JobService;
 
 @RestController
 @RequestMapping("/job")
+@RefreshScope
 public class JobController {
 
 	private final JobService jobService;
@@ -35,7 +35,6 @@ public class JobController {
 		this.jobService = jobService;
 		this.userMicroserviceInvoker = userMicroserviceInvoker;
 	}
-
 
 	@Value("${server.port}")
 	private String portNumber;
