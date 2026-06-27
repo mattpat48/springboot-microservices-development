@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 import it.disim.univaq.sose.examples.openjob.invoker.UserMicroserviceInvoker;
 import it.disim.univaq.sose.examples.openjob.model.Applicant;

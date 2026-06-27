@@ -4,9 +4,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
-@FeignClient(name = "user")
+@FeignClient(name = "user-microservice")
 public interface UserMicroserviceInvoker {
 
 	public static final String FIELD_ID = "id";
