@@ -1,5 +1,13 @@
 # Project Updates
 
+## Development Step: 5-dockerization
+- **Step 5 Dockerization**:
+  - Parametrized microservices and API Gateway configuration, abstracting `CONFIG_SERVER_HOST` and `CONFIG_SERVER_PORT`.
+  - Parametrized external resource URIs in property repository files (`MYSQL_HOST`, `MYSQL_DB`, `MYSQL_USER`, `MYSQL_PASSWORD`, `EUREKA_SERVER`).
+  - Added Spring Retry (`spring-retry`, `spring-boot-starter-aop`) to microservices to support fail-fast during Docker Compose startup.
+  - Added `Dockerfile` for each service (`user`, `job`, `gateway`, `discovery-server`, `config-server`).
+  - Created root `docker-compose.yml` for unified stack deployment.
+
 ## Version Migrations (Global)
 The legacy configurations in all `pom.xml` files across the project (including the monolithic application, microservices, and all development steps) have been migrated to the latest standards:
 - **Spring Boot**: Upgraded from `3.x` to `4.1.0`.
@@ -34,6 +42,11 @@ The legacy Spring code in `monolithic-application/openjob` has been updated to a
 - **OpenFeign Configuration**: Introduced the `spring-cloud-starter-openfeign` dependency and activated `@EnableFeignClients` in the `JobApplication` main class.
 - **Constructor Injection & ResponseEntity Builders**: Updated the `job` and `user` microservices and removed obsolete imports.
 - **Jackson Dependency Fix**: Added `jackson-databind` to the `job` microservice.
+
+## Development Step: 5-dockerization
+- **Parametrization**: Abstracted all hardcoded values (`CONFIG_SERVER_HOST`, `CONFIG_SERVER_PORT`, `MYSQL_HOST`, `MYSQL_DB`, `MYSQL_USER`, `MYSQL_PASSWORD`, `EUREKA_SERVER`) into environment variables in the `openjob-properties-repository` files.
+- **Dependencies**: Added `spring-retry` and `spring-boot-starter-aop` to `pom.xml` files for all microservices to enable retry logic.
+- **Dockerization**: Created `Dockerfile`s for each microservice (`user`, `job`, `gateway`, `discovery-server`, `config-server`) and a root `docker-compose.yml` for unified deployment.
 
 ## Global Modernizations: RestTemplate Anti-Pattern Fixes
 During a final review of the modernization process from steps `0` through `3`, a major anti-pattern was identified and resolved:
