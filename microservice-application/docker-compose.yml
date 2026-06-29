@@ -80,6 +80,7 @@ services:
       MYSQL_DB: job
       MYSQL_USER: root
       MYSQL_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
       MICROSERVICE_USER_FIND_URI: http://user-microservice:9044/user/username/
       MICROSERVICE_USER_BASE_URI: http://user-microservice:9044/user/
     depends_on:
@@ -87,5 +88,12 @@ services:
       - discovery-server
       - openjob-mysql
       - user-microservice
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
 volumes:
-  mysql-data: 
+  mysql-data:
