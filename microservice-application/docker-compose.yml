@@ -38,6 +38,15 @@ services:
       CONFIG_SERVER_HOST: config-server
       CONFIG_SERVER_PORT: 8888
       EUREKA_SERVER: http://discovery-server:8761/eureka/
+      MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,refresh,gateway
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_ID: user_route
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: lb://user-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_PREDICATES_0: Path=/api/usr/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_FILTERS_0: RewritePath=/api/usr(?<segment>/?.*), /user$${segment}
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_ID: job_route
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_URI: lb://job-microservice
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_PREDICATES_0: Path=/api/job/**
+      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_FILTERS_0: RewritePath=/api/job(?<segment>/?.*), /job$${segment}
     depends_on:
       - config-server
       - discovery-server
@@ -71,9 +80,12 @@ services:
       MYSQL_DB: job
       MYSQL_USER: root
       MYSQL_PASSWORD: root
+      MICROSERVICE_USER_FIND_URI: http://user-microservice:9044/user/username/
+      MICROSERVICE_USER_BASE_URI: http://user-microservice:9044/user/
     depends_on:
       - config-server
       - discovery-server
       - openjob-mysql
+      - user-microservice
 volumes:
   mysql-data: 

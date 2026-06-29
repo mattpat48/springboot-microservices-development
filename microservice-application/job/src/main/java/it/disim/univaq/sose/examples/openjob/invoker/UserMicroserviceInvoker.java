@@ -2,13 +2,12 @@ package it.disim.univaq.sose.examples.openjob.invoker;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
 @RefreshScope
@@ -25,7 +24,7 @@ public class UserMicroserviceInvoker {
 	@Value("${microservice.user.find.uri}")
 	private String baseUri;
 
-	public JsonNode findUserByUsername(String username) {
+	public Map<String, Object> findUserByUsername(String username) {
 		URI uri = null;
 		try {
 			uri = new URI(baseUri + username);
@@ -33,7 +32,7 @@ public class UserMicroserviceInvoker {
 			e.printStackTrace();
 		}
 		RestTemplate restTemplate = new RestTemplate();
-		return restTemplate.getForObject(uri, JsonNode.class);
+		return restTemplate.getForObject(uri, Map.class);
 	}
 
 }

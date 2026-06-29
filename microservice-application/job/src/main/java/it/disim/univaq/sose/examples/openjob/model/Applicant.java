@@ -20,7 +20,7 @@ public class Applicant extends DateAudit {
     private ApplicantIdentity applicantIdentity;
 
 	@JsonIgnore // @JsonIgnore is used to solve infinite recursion issue caused by bidirectional relationship
-	@MapsId("job_id")
+	@MapsId("jobId")
 	@ManyToOne (fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "job_id", nullable = false, updatable = false)
 	private Job job;
@@ -41,4 +41,16 @@ public class Applicant extends DateAudit {
 		this.job = job;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Applicant applicant = (Applicant) o;
+		return applicantIdentity != null ? applicantIdentity.equals(applicant.applicantIdentity) : applicant.applicantIdentity == null;
+	}
+
+	@Override
+	public int hashCode() {
+		return applicantIdentity != null ? applicantIdentity.hashCode() : 0;
+	}
 }

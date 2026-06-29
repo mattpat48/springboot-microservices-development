@@ -1,6 +1,7 @@
 package it.disim.univaq.sose.examples.openjob.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import it.disim.univaq.sose.examples.openjob.invoker.UserMicroserviceInvoker;
 import it.disim.univaq.sose.examples.openjob.model.Applicant;
@@ -76,13 +75,13 @@ public class JobController {
 		System.out.println(portNumber);
 		Job job = jobService.findById(id);
 
-		JsonNode jsonUser = userMicroserviceInvoker.findUserByUsername(username);
+		Map<String, Object> jsonUser = userMicroserviceInvoker.findUserByUsername(username);
 
 		Optional.ofNullable(jsonUser).orElseThrow();
 
 		ApplicantIdentity applicantIdentity = new ApplicantIdentity();
 		applicantIdentity.setJobId(job.getId());
-		applicantIdentity.setUserId(jsonUser.findValue(UserMicroserviceInvoker.FIELD_ID).asLong());
+		applicantIdentity.setUserId(((Number) jsonUser.get(UserMicroserviceInvoker.FIELD_ID)).longValue());
 		Applicant applicant = new Applicant();
 		applicant.setApplicantIdentity(applicantIdentity);
 		applicant.setJob(job);
