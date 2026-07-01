@@ -52,6 +52,12 @@ public class JobController {
 	@PostMapping
 	public ResponseEntity<Void> createJob(@RequestBody Job job) {
 		System.out.println(portNumber);
+		if (job.getCreatedBy() != null) {
+			Map<String, Object> userMap = userMicroserviceInvoker.findUserById(job.getCreatedBy());
+			if (!hasRole(userMap, "job", "admin")) {
+				return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+			}
+		}
 		jobService.create(job);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -59,6 +65,12 @@ public class JobController {
 	@PutMapping
 	public ResponseEntity<Void> updateJob(@RequestBody Job job) {
 		System.out.println(portNumber);
+		if (job.getCreatedBy() != null) {
+			Map<String, Object> userMap = userMicroserviceInvoker.findUserById(job.getCreatedBy());
+			if (!hasRole(userMap, "job", "admin")) {
+				return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+			}
+		}
 		jobService.update(job);
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
@@ -79,6 +91,10 @@ public class JobController {
 
 		Optional.ofNullable(jsonUser).orElseThrow();
 
+		if (!hasRole(jsonUser, "applicant", "candidate", "admin")) {
+			return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+		}
+
 		ApplicantIdentity applicantIdentity = new ApplicantIdentity();
 		applicantIdentity.setJobId(job.getId());
 		applicantIdentity.setUserId(((Number) jsonUser.get(UserMicroserviceInvoker.FIELD_ID)).longValue());
@@ -90,6 +106,26 @@ public class JobController {
 		jobService.update(job);
 
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean hasRole(Map<String, Object> userMap, String... allowedRoles) {
+		if (userMap == null) return false;
+		Object rolesObj = userMap.get(UserMicroserviceInvoker.FIELD_ROLES);
+		if (!(rolesObj instanceof List)) return false;
+		List<Map<String, Object>> roles = (List<Map<String, Object>>) rolesObj;
+		for (Map<String, Object> r : roles) {
+			Object nameObj = r.get(UserMicroserviceInvoker.FIELD_ROLE_NAME);
+			if (nameObj != null) {
+				String name = nameObj.toString();
+				for (String allowed : allowedRoles) {
+					if (allowed.equalsIgnoreCase(name)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 }

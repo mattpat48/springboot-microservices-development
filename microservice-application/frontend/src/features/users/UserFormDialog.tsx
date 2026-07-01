@@ -34,6 +34,26 @@ export function UserFormDialog({
     setForm(editing ? { ...editing, password: editing.password ?? "password123" } : emptyUser);
   }, [editing, open]);
 
+  const hasRole = (roleName: string) => (form.roles ?? []).some((r) => r.name?.toLowerCase() === roleName.toLowerCase());
+
+  const toggleRole = (roleName: string, checked: boolean) => {
+    let roles = [...(form.roles ?? [])];
+    if (checked) {
+      if (roleName.toLowerCase() === "admin") {
+        roles = [{ id: 1, name: "admin" }];
+      } else {
+        roles = roles.filter((r) => r.name?.toLowerCase() !== "admin");
+        const roleId = roleName.toLowerCase() === "job" ? 3 : 2;
+        if (!roles.some((r) => r.name?.toLowerCase() === roleName.toLowerCase())) {
+          roles.push({ id: roleId, name: roleName.toLowerCase() });
+        }
+      }
+    } else {
+      roles = roles.filter((r) => r.name?.toLowerCase() !== roleName.toLowerCase());
+    }
+    setForm({ ...form, roles });
+  };
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     try {
@@ -84,6 +104,37 @@ export function UserFormDialog({
               value={form.password ?? ""}
               onChange={(event) => setForm({ ...form, password: event.target.value })}
             />
+          </div>
+          <div className="space-y-2">
+            <Label>Ruoli</Label>
+            <div className="grid gap-3 sm:grid-cols-3">
+              <label className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={hasRole("admin")}
+                  onChange={(event) => toggleRole("admin", event.target.checked)}
+                />
+                Admin
+              </label>
+              <label className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={hasRole("job")}
+                  disabled={hasRole("admin")}
+                  onChange={(event) => toggleRole("job", event.target.checked)}
+                />
+                Job Manager
+              </label>
+              <label className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={hasRole("applicant") || hasRole("candidate")}
+                  disabled={hasRole("admin")}
+                  onChange={(event) => toggleRole("applicant", event.target.checked)}
+                />
+                Candidate
+              </label>
+            </div>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="flex items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm">

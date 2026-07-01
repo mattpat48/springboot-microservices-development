@@ -24,10 +24,24 @@ public class UserMicroserviceInvoker {
 	@Value("${microservice.user.find.uri}")
 	private String baseUri;
 
+	@Value("${microservice.user.base.uri:http://user-microservice:9044/user/}")
+	private String userBaseUri;
+
 	public Map<String, Object> findUserByUsername(String username) {
 		URI uri = null;
 		try {
 			uri = new URI(baseUri + username);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		RestTemplate restTemplate = new RestTemplate();
+		return restTemplate.getForObject(uri, Map.class);
+	}
+
+	public Map<String, Object> findUserById(Long id) {
+		URI uri = null;
+		try {
+			uri = new URI(userBaseUri + "id/" + id);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
