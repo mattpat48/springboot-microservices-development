@@ -1,12 +1,14 @@
-import { BriefcaseBusiness, LayoutDashboard, Send, Users } from "lucide-react";
+import { Activity, BriefcaseBusiness, LayoutDashboard, Send, Users } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { TelemetryDrawer } from "@/components/shared/TelemetryDrawer";
 
 const navItems = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/utenti", label: "Utenti", icon: Users },
   { to: "/offerte", label: "Offerte", icon: BriefcaseBusiness },
   { to: "/candidature", label: "Candidature", icon: Send },
+  { to: "/telemetria", label: "Telemetria", icon: Activity },
 ];
 
 export default function App() {
@@ -50,7 +52,7 @@ export default function App() {
             </span>
             <p className="font-display text-lg font-bold">OpenJob</p>
           </div>
-          <nav className="grid grid-cols-4 gap-1">
+          <nav className="grid grid-cols-5 gap-1">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -74,6 +76,8 @@ export default function App() {
           <Outlet />
         </main>
       </div>
+
+      <TelemetryDrawer />
     </div>
   );
 }

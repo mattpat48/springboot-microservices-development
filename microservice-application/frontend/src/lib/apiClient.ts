@@ -1,3 +1,5 @@
+import { recordTelemetry } from "@/hooks/useTelemetry";
+
 export class ApiError extends Error {
   status: number;
 
@@ -9,20 +11,61 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const response = await fetch(path, {
-    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
-    ...options,
-  });
+  const start = performance.now();
+  const method = options.method || "GET";
+  try {
+    const response = await fetch(path, {
+      headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+      ...options,
+    });
+    const durationMs = performance.now() - start;
 
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new ApiError(`${response.status} ${response.statusText}${body ? ` - ${body}` : ""}`, response.status);
+    recordTelemetry({
+      method,
+      url: path,
+      durationMs,
+      status: response.status,
+      statusText: response.statusText,
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => "");
+      let errorMessage = `${response.status} ${response.statusText}`;
+      if (body) {
+        try {
+          const json = JSON.parse(body);
+          if (json.message && typeof json.message === "string" && json.message !== "No message available") {
+            errorMessage = json.message;
+          } else if (json.error && typeof json.error === "string" && json.error !== "Internal Server Error") {
+            errorMessage = json.error;
+          } else {
+            errorMessage = `${response.status}: ${body}`;
+          }
+        } catch {
+          errorMessage = `${response.status}: ${body}`;
+        }
+      }
+      throw new ApiError(errorMessage, response.status);
+    }
+
+    if (response.status === 204) return undefined as T;
+
+    const text = await response.text();
+    return (text ? JSON.parse(text) : undefined) as T;
+  } catch (error) {
+    const durationMs = performance.now() - start;
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    recordTelemetry({
+      method,
+      url: path,
+      durationMs,
+      status: 0,
+      statusText: error instanceof Error ? error.message : "Network Error",
+    });
+    throw error;
   }
-
-  if (response.status === 204) return undefined as T;
-
-  const text = await response.text();
-  return (text ? JSON.parse(text) : undefined) as T;
 }
 
 export const apiClient = {

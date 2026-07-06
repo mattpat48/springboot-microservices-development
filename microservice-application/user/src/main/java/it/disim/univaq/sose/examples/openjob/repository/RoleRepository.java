@@ -1,5 +1,6 @@
 package it.disim.univaq.sose.examples.openjob.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ import it.disim.univaq.sose.examples.openjob.model.Role;
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
 	Optional<Role> findByName(String name);
+
+	List<Role> findAllByName(String name);
 }

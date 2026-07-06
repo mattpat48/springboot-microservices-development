@@ -55,7 +55,7 @@ public class JobController {
 		if (job.getCreatedBy() != null) {
 			Map<String, Object> userMap = userMicroserviceInvoker.findUserById(job.getCreatedBy());
 			if (!hasRole(userMap, "job", "admin")) {
-				return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+				throw new SecurityException("Operazione negata: solo gli utenti con il ruolo di Job Manager (o Admin) possono pubblicare o gestire offerte.");
 			}
 		}
 		jobService.create(job);
@@ -68,7 +68,7 @@ public class JobController {
 		if (job.getCreatedBy() != null) {
 			Map<String, Object> userMap = userMicroserviceInvoker.findUserById(job.getCreatedBy());
 			if (!hasRole(userMap, "job", "admin")) {
-				return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+				throw new SecurityException("Operazione negata: solo gli utenti con il ruolo di Job Manager (o Admin) possono pubblicare o gestire offerte.");
 			}
 		}
 		jobService.update(job);
@@ -89,10 +89,12 @@ public class JobController {
 
 		Map<String, Object> jsonUser = userMicroserviceInvoker.findUserByUsername(username);
 
-		Optional.ofNullable(jsonUser).orElseThrow();
+		if (jsonUser == null) {
+			throw new java.util.NoSuchElementException("Utente candidato '" + username + "' non trovato nel sistema.");
+		}
 
 		if (!hasRole(jsonUser, "applicant", "candidate", "admin")) {
-			return new ResponseEntity<Void>(HttpStatus.FORBIDDEN);
+			throw new SecurityException("Operazione negata: solo gli utenti con il ruolo di Candidato (o Admin) possono inviare candidature.");
 		}
 
 		ApplicantIdentity applicantIdentity = new ApplicantIdentity();

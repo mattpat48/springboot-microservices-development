@@ -60,7 +60,10 @@ public class UserServiceImpl implements UserService {
 				if (r != null) {
 					it.disim.univaq.sose.examples.openjob.model.Role dbRole = null;
 					if (r.getName() != null) {
-						dbRole = roleRepository.findByName(r.getName()).orElse(null);
+						java.util.List<it.disim.univaq.sose.examples.openjob.model.Role> matches = roleRepository.findAllByName(r.getName());
+						if (!matches.isEmpty()) {
+							dbRole = matches.get(0);
+						}
 					}
 					if (dbRole == null && r.getId() != null) {
 						dbRole = roleRepository.findById(r.getId()).orElse(null);
