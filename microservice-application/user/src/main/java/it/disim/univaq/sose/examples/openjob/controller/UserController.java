@@ -57,4 +57,9 @@ public class UserController {
 		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 	}
 
+	@GetMapping("/stats")
+	public ResponseEntity<it.disim.univaq.sose.examples.openjob.model.UserDomainStats> getStats() {
+		return new ResponseEntity<>(userService.getStats(), HttpStatus.OK);
+	}
+
 }

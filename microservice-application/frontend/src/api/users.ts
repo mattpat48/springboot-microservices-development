@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/apiClient";
-import type { User } from "@/types/openjob";
+import type { User, UserDomainStats } from "@/types/openjob";
 
 export const usersApi = {
   getAll: () => apiClient.get<User[]>("/api/usr"),
@@ -8,4 +8,5 @@ export const usersApi = {
   create: (user: User) => apiClient.post("/api/usr", user),
   update: (user: User) => apiClient.put("/api/usr", user),
   remove: (id: number) => apiClient.del(`/api/usr/id/${id}`),
+  getStats: () => apiClient.get<UserDomainStats>("/api/usr/stats"),
 };

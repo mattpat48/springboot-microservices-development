@@ -92,4 +92,42 @@ public class UserServiceImpl implements UserService {
 	public Optional<User> findByUsername(String username) {
 		return repository.findByUsername(username);
 	}
+
+	@Override
+	@Transactional(readOnly=true)
+	public it.disim.univaq.sose.examples.openjob.model.UserDomainStats getStats() {
+		List<User> users = repository.findAll();
+		long total = users.size();
+		long active = users.stream().filter(u -> u.isActive()).count();
+		long inactive = total - active;
+
+		java.time.Instant now = java.time.Instant.now();
+		java.time.Instant twentyFourHoursAgo = now.minus(1, java.time.temporal.ChronoUnit.DAYS);
+		java.time.Instant sevenDaysAgo = now.minus(7, java.time.temporal.ChronoUnit.DAYS);
+
+		long new24h = users.stream()
+				.filter(u -> u.getCreatedAt() != null && !u.getCreatedAt().isBefore(twentyFourHoursAgo))
+				.count();
+		long new7d = users.stream()
+				.filter(u -> u.getCreatedAt() != null && !u.getCreatedAt().isBefore(sevenDaysAgo))
+				.count();
+
+		java.util.Map<String, Long> roleBreakdown = new java.util.HashMap<>();
+		roleBreakdown.put("admin", 0L);
+		roleBreakdown.put("job", 0L);
+		roleBreakdown.put("applicant", 0L);
+
+		for (User u : users) {
+			if (u.getRoles() != null) {
+				for (it.disim.univaq.sose.examples.openjob.model.Role r : u.getRoles()) {
+					if (r != null && r.getName() != null) {
+						String rName = r.getName().toLowerCase();
+						roleBreakdown.put(rName, roleBreakdown.getOrDefault(rName, 0L) + 1);
+					}
+				}
+			}
+		}
+
+		return new it.disim.univaq.sose.examples.openjob.model.UserDomainStats(total, active, inactive, new24h, new7d, roleBreakdown);
+	}
 }

@@ -130,4 +130,9 @@ public class JobController {
 		return false;
 	}
 
+	@GetMapping("/stats")
+	public ResponseEntity<it.disim.univaq.sose.examples.openjob.model.JobDomainStats> getStats() {
+		return new ResponseEntity<>(jobService.getStats(), HttpStatus.OK);
+	}
+
 }

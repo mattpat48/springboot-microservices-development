@@ -18,4 +18,6 @@ public interface UserService {
 	void delete(Long id);
 
 	Optional<User> findByUsername(String username);
+
+	it.disim.univaq.sose.examples.openjob.model.UserDomainStats getStats();
 }
