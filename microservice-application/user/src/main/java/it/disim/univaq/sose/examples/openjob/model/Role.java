@@ -20,7 +20,7 @@ public class Role extends DateAudit {
 	@Column(name = "role_id")
 	private Long id;
 
-	@Column(nullable = false, length = 64)
+	@Column(nullable = false, length = 64, unique = true)
 	private String name;
 
 	@Lob

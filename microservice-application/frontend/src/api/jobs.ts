@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/apiClient";
-import type { Job } from "@/types/openjob";
+import type { Job, JobDomainStats } from "@/types/openjob";
 
 export const jobsApi = {
   getAll: () => apiClient.get<Job[]>("/api/job"),
@@ -9,4 +9,5 @@ export const jobsApi = {
   remove: (id: number) => apiClient.del(`/api/job/${id}`),
   apply: (username: string, jobId: number) =>
     apiClient.get<void>(`/api/job/apply/${encodeURIComponent(username)}/${jobId}`),
+  getStats: () => apiClient.get<JobDomainStats>("/api/job/stats"),
 };

@@ -50,11 +50,13 @@ export function ApplyDialog({ open, onOpenChange }: { open: boolean; onOpenChang
                 <SelectValue placeholder="Seleziona candidato" />
               </SelectTrigger>
               <SelectContent>
-                {(users.data ?? []).map((user) => (
-                  <SelectItem key={user.id ?? user.username} value={user.username}>
-                    {user.username} (#{user.id})
-                  </SelectItem>
-                ))}
+                {(users.data ?? [])
+                  .filter((user) => (user.roles ?? []).some((r) => r.name?.toLowerCase() === "applicant" || r.name?.toLowerCase() === "candidate"))
+                  .map((user) => (
+                    <SelectItem key={user.id ?? user.username} value={user.username}>
+                      {user.username} (#{user.id})
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

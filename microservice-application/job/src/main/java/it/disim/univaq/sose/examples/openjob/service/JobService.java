@@ -15,4 +15,6 @@ public interface JobService {
 	void update(Job job);
 
 	void delete(Long id);
+
+	it.disim.univaq.sose.examples.openjob.model.JobDomainStats getStats();
 }

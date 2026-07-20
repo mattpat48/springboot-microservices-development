@@ -80,7 +80,7 @@ export function JobFormDialog({
               </SelectTrigger>
               <SelectContent>
                 {(users.data ?? [])
-                  .filter((user) => user.id != null)
+                  .filter((user) => user.id != null && (user.roles ?? []).some((r) => r.name?.toLowerCase() === "job"))
                   .map((user) => (
                     <SelectItem key={user.id} value={String(user.id)}>
                       {user.username} (#{user.id})
