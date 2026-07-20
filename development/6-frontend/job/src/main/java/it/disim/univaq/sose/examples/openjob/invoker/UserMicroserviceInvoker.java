@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import tools.jackson.databind.JsonNode;
 
-@FeignClient(name = "user-microservice")
+@FeignClient(name = "USER-MICROSERVICE")
 public interface UserMicroserviceInvoker {
 
 	public static final String FIELD_ID = "id";

@@ -88,5 +88,13 @@ services:
       - config-server
       - discovery-server
 
+  frontend:
+    build: ./frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
 volumes:
   mysql-data:
