@@ -1,0 +1,92 @@
+services:
+  openjob-mysql:
+    image: mysql:latest
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+
+  openjob-phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8081:80"
+    links:
+      - "openjob-mysql:db"
+    depends_on:
+      - openjob-mysql
+
+  config-server:
+    build: ./config-server
+    restart: always
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./openjob-properties-repository:/app/config-repo
+    environment:
+      SPRING_CLOUD_CONFIG_SERVER_GIT_URI: file:///app/config-repo
+
+  discovery-server:
+    build: ./discovery-server
+    restart: always
+    ports:
+      - "8761:8761"
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+    depends_on:
+      - config-server
+
+  user-microservice:
+    build: ./user
+    restart: always
+    ports:
+      - "9044-9049:9044"
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      EUREKA_SERVER: http://discovery-server:8761/eureka/
+      MYSQL_HOST: openjob-mysql:3306
+      MYSQL_DB: user_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    depends_on:
+      - config-server
+      - discovery-server
+      - openjob-mysql
+
+  job-microservice:
+    build: ./job
+    restart: always
+    expose:
+      - "9055"
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      EUREKA_SERVER: http://discovery-server:8761/eureka/
+      MYSQL_HOST: openjob-mysql:3306
+      MYSQL_DB: job_db
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    depends_on:
+      - config-server
+      - discovery-server
+      - openjob-mysql
+
+  gateway:
+    build: ./gateway
+    restart: always
+    ports:
+      - "9000:9000"
+    environment:
+      CONFIG_SERVER_HOST: config-server
+      CONFIG_SERVER_PORT: 8888
+      EUREKA_SERVER: http://discovery-server:8761/eureka/
+    depends_on:
+      - openjob-mysql
+      - user-microservice
+      - job-microservice
+      - config-server
+      - discovery-server
+
+volumes:
+  mysql-data:
