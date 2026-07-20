@@ -1,0 +1,94 @@
+================================================================================
+           GUIDA STEP-BY-STEP: ESEGUIRE LOCUST TRAMITE WEB UI (METODO 2)
+================================================================================
+
+Questa guida spiega passo per passo come avviare il test di carico (Load Testing)
+utilizzando l'interfaccia grafica di Locust sul browser, in modo da generare traffico 
+sui microservizi OpenJob e visualizzare le metriche in tempo reale su Grafana.
+
+--------------------------------------------------------------------------------
+PREREQUISITI
+--------------------------------------------------------------------------------
+1. Assicurati che l'intera infrastruttura Docker sia avviata e funzionante:
+   Apri un terminale nella cartella "microservice-application" ed esegui:
+      docker compose ps
+
+   Tutti i microservizi (gateway, user, job, discovery, config), oltre al database 
+   MySQL, Prometheus e Grafana, devono risultare "Up / Running".
+
+2. Assicurati di avere Python installato e la libreria Locust pronta:
+   Puoi verificare eseguendo nel terminale:
+      python -m pip install locust
+
+--------------------------------------------------------------------------------
+STEP 1: APRIRE IL TERMINALE NELLA ROOT DEL PROGETTO
+--------------------------------------------------------------------------------
+Apri PowerShell, il Prompt dei Comandi oppure il terminale integrato dell'IDE
+posizionandoti nella cartella principale del progetto:
+
+   c:\Users\lampa\Desktop\SOSE\Final project\springboot-microservices-development
+
+--------------------------------------------------------------------------------
+STEP 2: AVVIARE IL SERVER DI LOCUST IN MODALITÀ WEB UI
+--------------------------------------------------------------------------------
+Esegui il seguente comando nel terminale:
+
+   python -m locust -f locust/locustfile.py --host http://localhost:9000
+
+Spiegazione dei parametri:
+ - "-f locust/locustfile.py" : specifica il percorso dello script di simulazione 
+                               che contiene le azioni degli utenti e dei recruiter.
+ - "--host http://localhost:9000" : indica che tutto il traffico deve essere inviato 
+                                    al nostro Spring Cloud Gateway (sulla porta 9000).
+
+Una volta avviato, vedrai nel terminale un messaggio simile a:
+   [INFO] Starting web interface at http://0.0.0.0:8089
+
+--------------------------------------------------------------------------------
+STEP 3: CONFIGURARE ED AVVIARE IL TEST DALL'INTERFACCIA BROWSER
+--------------------------------------------------------------------------------
+1. Apri il tuo browser (Chrome, Edge, Firefox, Safari) e vai all'indirizzo:
+      http://localhost:8089
+
+2. Ti apparirà la schermata di configurazione iniziale di Locust con tre campi:
+   - "Number of users (peak concurrency)" : il numero massimo di utenti virtuali 
+     simulati contemporaneamente (es. inserisci: 10).
+   - "Spawn rate (users started/second)" : la velocità con cui vengono aggiunti 
+     nuovi utenti al secondo (es. inserisci: 2).
+   - "Host" : risulterà già precompilato a http://localhost:9000.
+
+3. Clicca sul pulsante blu "Start swarming".
+   Locust inizierà immediatamente a generare richieste API (creazione account,
+   pubblicazione offerte di lavoro, invio candidature, query al database MySQL).
+
+--------------------------------------------------------------------------------
+STEP 4: VISUALIZZARE LE METRICHE IN TEMPO REALE SU GRAFANA
+--------------------------------------------------------------------------------
+1. Apri un'altra scheda o finestra del browser all'indirizzo:
+      http://localhost:3001
+
+2. Effettua il login con le credenziali predefinite:
+      Username: admin
+      Password: admin
+
+3. Vai su Dashboards e seleziona "OpenJob Infrastructure Monitoring".
+
+4. In alto a destra nella dashboard di Grafana:
+   - Imposta l'intervallo temporale su "Last 15 minutes" (Ultimi 15 minuti).
+   - Imposta il menu a tendina di aggiornamento automatico ("Refresh") su "5s".
+
+Vedrai i grafici animarsi in tempo reale con il traffico generato da Locust:
+ - Throughput e latenza (Max e Avg per ogni microservizio).
+ - Suddivisione dei codici di stato HTTP (2xx, 4xx, 5xx).
+ - Tempi di attesa ed occupazione del pool di connessioni al database (HikariCP).
+ - Stato dei thread della JVM (Runnable, Waiting, Blocked) e pause del Garbage Collector.
+
+--------------------------------------------------------------------------------
+STEP 5: TERMINARE IL TEST DI CARICO
+--------------------------------------------------------------------------------
+Quando hai finito di osservare le metriche:
+1. Torna nella scheda del browser di Locust (http://localhost:8089) e clicca sul
+   pulsante rosso "Stop" per interrompere la generazione di traffico.
+2. Per chiudere definitivamente il server di Locust, torna nel terminale in cui lo
+   hai avviato e premi la combinazione di tasti: Ctrl + C.
+================================================================================
