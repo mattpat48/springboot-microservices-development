@@ -1,13 +1,5 @@
 # Project Updates
 
-## Development Step: 5-dockerization
-- **Step 5 Dockerization**:
-  - Parametrized microservices and API Gateway configuration, abstracting `CONFIG_SERVER_HOST` and `CONFIG_SERVER_PORT`.
-  - Parametrized external resource URIs in property repository files (`MYSQL_HOST`, `MYSQL_DB`, `MYSQL_USER`, `MYSQL_PASSWORD`, `EUREKA_SERVER`).
-  - Added Spring Retry (`spring-retry`, `spring-boot-starter-aop`) to microservices to support fail-fast during Docker Compose startup.
-  - Added `Dockerfile` for each service (`user`, `job`, `gateway`, `discovery-server`, `config-server`).
-  - Created root `docker-compose.yml` for unified stack deployment.
-
 ## Version Migrations (Global)
 The legacy configurations in all `pom.xml` files across the project (including the monolithic application, microservices, and all development steps) have been migrated to the latest standards:
 - **Spring Boot**: Upgraded from `3.x` to `4.1.0`.
