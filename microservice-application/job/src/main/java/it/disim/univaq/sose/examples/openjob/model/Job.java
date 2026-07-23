@@ -29,7 +29,8 @@ public class Job extends DateAudit {
 	@Column(nullable = false, length = 255)
 	private String title;
 
-	@Column(columnDefinition = "TEXT", length = 4096)
+	@Lob
+	@Column
 	private String description;
 
 
